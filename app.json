@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "expo-meta-wearables-dat-example",
+    "slug": "expo-meta-wearables-dat-example",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "expo.modules.emwdat.example",
+      "appleTeamId": "Q9DC849723"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "expo.modules.emwdat.example"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "17.0"
+          }
+        }
+      ],
+      [
+        "../app.plugin.js",
+        {
+          "urlScheme": "emwdat-example",
+          "metaAppId": "1609318680350219",
+          "clientToken": "AR|1609318680350219|8db12543c2dd86efe6e705e3bb93b9e4",
+          "bluetoothUsageDescription": "This app uses Bluetooth to communicate with Meta Wearables glasses."
+        }
+      ]
+    ]
+  }
+}
