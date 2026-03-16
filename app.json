@@ -2,6 +2,7 @@
   "expo": {
     "name": "Metla JeBem",
     "slug": "expo-meta-wearables-dat-example",
+    "scheme": "emwdat-example",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,9 +20,18 @@
       "infoPlist": {
         "NSMicrophoneUsageDescription": "This app listens for voice commands to trigger one-shot scene understanding.",
         "NSSpeechRecognitionUsageDescription": "This app recognizes trigger phrases like \"What I see\" to capture and describe a frame.",
+        "NSBluetoothAlwaysUsageDescription": "This app uses Bluetooth to communicate with Meta Wearables glasses.",
+        "LSApplicationQueriesSchemes": ["fb-viewapp"],
+        "UISupportedExternalAccessoryProtocols": ["com.meta.ar.wearable"],
         "CFBundleDisplayName": "Metla JeBem",
-        "UIBackgroundModes": ["audio"],
-        "ITSAppUsesNonExemptEncryption": false
+        "UIBackgroundModes": ["audio", "bluetooth-peripheral", "external-accessory"],
+        "ITSAppUsesNonExemptEncryption": false,
+        "MWDAT": {
+          "AppLinkURLScheme": "emwdat-example://",
+          "MetaAppID": "1609318680350219",
+          "ClientToken": "AR|1609318680350219|8db12543c2dd86efe6e705e3bb93b9e4",
+          "TeamID": "$(DEVELOPMENT_TEAM)"
+        }
       }
     },
     "android": {
@@ -44,17 +54,7 @@
             "deploymentTarget": "17.0"
           }
         }
-      ],
-      [
-        "expo-meta-wearables-dat",
-        {
-          "urlScheme": "emwdat-example",
-          "metaAppId": "1609318680350219",
-          "clientToken": "AR|1609318680350219|8db12543c2dd86efe6e705e3bb93b9e4",
-          "bluetoothUsageDescription": "This app uses Bluetooth to communicate with Meta Wearables glasses."
-        }
-      ],
-      "./plugins/withRemoveMWDATEmbed"
+      ]
     ],
     "extra": {
       "eas": {
