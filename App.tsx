@@ -10,9 +10,10 @@ import type {
   LogLevel,
 } from "expo-meta-wearables-dat";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { Alert, AppState, Linking, Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
+import { SmolVLMModule } from "./modules/expo-smolvlm/src";
 import { AIVision } from "./components/ai-vision";
 import { DeviceCard } from "./components/device-card";
 import { EventLog } from "./components/event-log";
@@ -46,6 +47,7 @@ export default function App() {
   const [selectedDeviceId, setSelectedDeviceId] = useState<DeviceIdentifier | null>(null);
   const [logLevel, setLogLevelState] = useState<LogLevel>("debug");
   const [eventLog, setEventLog] = useState<LogEntry[]>([]);
+  const [voiceIntentTriggerCount, setVoiceIntentTriggerCount] = useState(0);
 
   // Frame stats
   const [fps, setFps] = useState(0);
@@ -172,6 +174,57 @@ export default function App() {
     }
     setLastPhoto(null);
   };
+
+  const capturePhotoForAiVision = useCallback(async () => {
+    await capturePhoto(photoFormat);
+  }, [capturePhoto, photoFormat]);
+
+  // Siri/AppIntent trigger plumbing: deep link and pending command consume.
+  useEffect(() => {
+    const consumePendingCommand = () => {
+      try {
+        const { command } = SmolVLMModule.consumePendingSiriCommand();
+        if (command === "what-i-see") {
+          addLogEntry('Siri trigger received: "What I see"', "#3b82f6");
+          setVoiceIntentTriggerCount((v) => v + 1);
+        }
+      } catch (err) {
+        console.log("[EMWDAT] Failed to consume pending Siri command", err);
+      }
+    };
+
+    const handleUrl = (url: string) => {
+      try {
+        const parsed = new URL(url);
+        const isTriggerPath = parsed.hostname === "ai-vision" && parsed.pathname === "/trigger";
+        const command = parsed.searchParams.get("command");
+        if (isTriggerPath && command === "what-i-see") {
+          addLogEntry('Siri trigger received: "What I see"', "#3b82f6");
+          setVoiceIntentTriggerCount((v) => v + 1);
+        }
+      } catch (err) {
+        console.log("[EMWDAT] Failed to parse incoming URL", url, err);
+      }
+    };
+
+    consumePendingCommand();
+    const sub = Linking.addEventListener("url", ({ url }) => handleUrl(url));
+    const appStateSub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        consumePendingCommand();
+      }
+    });
+    Linking.getInitialURL()
+      .then((url) => {
+        if (url) handleUrl(url);
+      })
+      .catch(() => {});
+
+    return () => {
+      sub.remove();
+      appStateSub.remove();
+    };
+  }, [addLogEntry]);
 
   // ---------------------------------------------------------------------------
   // Render
@@ -306,8 +359,9 @@ export default function App() {
           {/* AI Vision */}
           <AIVision
             isStreaming={streamState === "streaming"}
-            capturePhoto={async () => { await capturePhoto(photoFormat); }}
+            capturePhoto={capturePhotoForAiVision}
             lastPhotoPath={lastPhoto?.filePath ?? null}
+            voiceIntentTriggerCount={voiceIntentTriggerCount}
           />
 
           {/* Last Photo */}

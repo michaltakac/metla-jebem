@@ -15,7 +15,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "expo.modules.emwdat.example",
-      "appleTeamId": "Q9DC849723"
+      "appleTeamId": "Q9DC849723",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "This app listens for voice commands to trigger one-shot scene understanding.",
+        "NSSpeechRecognitionUsageDescription": "This app recognizes trigger phrases like \"What I see\" to capture and describe a frame.",
+        "UIBackgroundModes": ["audio"]
+      }
     },
     "android": {
       "adaptiveIcon": {

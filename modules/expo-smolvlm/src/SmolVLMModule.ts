@@ -6,6 +6,15 @@ interface SmolVLMEvents {
 
 declare class SmolVLMModuleType extends NativeModule<SmolVLMEvents> {
   loadModel(): Promise<{ status: string }>;
+  requestSpeechPermissions(): Promise<{ granted: boolean }>;
+  prepareBackgroundAudio(): Promise<{ ok: boolean }>;
+  releaseBackgroundAudio(): Promise<{ ok: boolean }>;
+  consumePendingSiriCommand(): { command: string | null };
+  listenForTrigger(
+    phrases: string[],
+    timeoutMs?: number
+  ): Promise<{ matched: boolean; phrase: string | null }>;
+  stopListeningForTrigger(): void;
   analyzeImage(
     imagePath: string,
     prompt: string
