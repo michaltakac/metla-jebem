@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "expo-meta-wearables-dat-example",
+    "name": "Metla JeBem",
     "slug": "expo-meta-wearables-dat-example",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,7 +19,9 @@
       "infoPlist": {
         "NSMicrophoneUsageDescription": "This app listens for voice commands to trigger one-shot scene understanding.",
         "NSSpeechRecognitionUsageDescription": "This app recognizes trigger phrases like \"What I see\" to capture and describe a frame.",
-        "UIBackgroundModes": ["audio"]
+        "CFBundleDisplayName": "Metla JeBem",
+        "UIBackgroundModes": ["audio"],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -52,6 +54,11 @@
           "bluetoothUsageDescription": "This app uses Bluetooth to communicate with Meta Wearables glasses."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "47bb4047-197c-4d8f-a0e1-011e8d882a0e"
+      }
+    }
   }
 }
