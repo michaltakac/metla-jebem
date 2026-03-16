@@ -53,7 +53,8 @@
           "clientToken": "AR|1609318680350219|8db12543c2dd86efe6e705e3bb93b9e4",
           "bluetoothUsageDescription": "This app uses Bluetooth to communicate with Meta Wearables glasses."
         }
-      ]
+      ],
+      "./plugins/withRemoveMWDATEmbed"
     ],
     "extra": {
       "eas": {

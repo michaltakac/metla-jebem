@@ -32,6 +32,7 @@ const VOICE_COMMANDS: VoiceCommand[] = [
 const ALL_TRIGGER_PHRASES = VOICE_COMMANDS.flatMap((command) => command.phrases);
 const DEFAULT_PROMPT = VOICE_COMMANDS[0].prompt;
 const VOICE_TIMEOUT_MS = 12000;
+const MIN_REPEAT_SPEECH_MS = 10000;
 
 const MODE_OPTIONS = [
   { label: "Continuous", value: "continuous" },
@@ -64,6 +65,7 @@ export function AIVision({
   const lastAnalyzedPath = useRef<string | null>(null);
   const lastLoggedProgressPct = useRef(-1);
   const lastSpokenTextRef = useRef<string>("");
+  const lastSpokenAtRef = useRef(0);
   const pendingPromptRef = useRef<string>(DEFAULT_PROMPT);
   const voiceCaptureArmedRef = useRef(false);
 
@@ -118,8 +120,16 @@ export function AIVision({
   const speakSummary = useCallback(async (text: string) => {
     if (!ttsEnabled) return;
     const summary = normalizeSummary(text);
-    if (!summary || summary === lastSpokenTextRef.current) return;
+    if (!summary) return;
+    const now = Date.now();
+    if (
+      summary === lastSpokenTextRef.current &&
+      now - lastSpokenAtRef.current < MIN_REPEAT_SPEECH_MS
+    ) {
+      return;
+    }
     lastSpokenTextRef.current = summary;
+    lastSpokenAtRef.current = now;
     try {
       await Speech.stop();
       Speech.speak(summary, {
@@ -219,6 +229,24 @@ export function AIVision({
           if (!cancelled) {
             setVoiceStatus("Captured. Generating summary...");
           }
+
+          // Wait until the triggered frame is analyzed before listening again.
+          while (!cancelled && voiceCaptureArmedRef.current) {
+            await new Promise((resolve) => setTimeout(resolve, 200));
+          }
+
+          // If TTS is enabled, avoid immediately taking over audio with recording.
+          if (ttsEnabled) {
+            while (!cancelled) {
+              try {
+                const speaking = await Speech.isSpeakingAsync();
+                if (!speaking) break;
+              } catch {
+                break;
+              }
+              await new Promise((resolve) => setTimeout(resolve, 200));
+            }
+          }
         } catch (err) {
           if (cancelled) return;
           const msg = err instanceof Error ? err.message : String(err);
@@ -246,7 +274,7 @@ export function AIVision({
       SmolVLMModule.stopListeningForTrigger();
       voiceCaptureArmedRef.current = false;
     };
-  }, [aiEnabled, isStreaming, modelStatus, analysisMode, capturePhoto, resolveCommand]);
+  }, [aiEnabled, isStreaming, modelStatus, analysisMode, capturePhoto, resolveCommand, ttsEnabled]);
 
   // Siri/AppIntent one-shot trigger (deep link from AppIntent).
   useEffect(() => {
@@ -296,11 +324,11 @@ export function AIVision({
     pendingPromptRef.current = DEFAULT_PROMPT;
 
     SmolVLMModule.analyzeImage(lastPhotoPath, prompt)
-      .then((result) => {
+      .then(async (result) => {
         const summary = normalizeSummary(result.text);
         setAnalysisText(summary);
         setTokensPerSecond(result.tokensPerSecond);
-        void speakSummary(summary);
+        await speakSummary(summary);
         if (analysisMode === "voice") {
           setVoiceStatus("Summary ready. Listening...");
           voiceCaptureArmedRef.current = false;
@@ -324,6 +352,7 @@ export function AIVision({
       setTokensPerSecond(0);
       lastAnalyzedPath.current = null;
       lastSpokenTextRef.current = "";
+      lastSpokenAtRef.current = 0;
       pendingPromptRef.current = DEFAULT_PROMPT;
       voiceCaptureArmedRef.current = false;
       setVoiceStatus("");
