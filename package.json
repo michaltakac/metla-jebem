@@ -14,6 +14,7 @@
     "expo-build-properties": "^1.0.10",
     "expo-document-picker": "^14.0.8",
     "expo-file-system": "^19.0.21",
+    "expo-meta-wearables-dat": "^1.1.0",
     "expo-speech": "~13.0.1",
     "react": "19.1.0",
     "react-native": "0.81.5",
@@ -27,7 +28,6 @@
   "private": true,
   "expo": {
     "autolinking": {
-      "nativeModulesDir": "..",
       "searchPaths": ["./modules"]
     }
   }

@@ -46,7 +46,7 @@
         }
       ],
       [
-        "../app.plugin.js",
+        "expo-meta-wearables-dat",
         {
           "urlScheme": "emwdat-example",
           "metaAppId": "1609318680350219",
