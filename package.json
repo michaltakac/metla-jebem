@@ -7,7 +7,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "eas-build-post-install": "if [ \"$EAS_BUILD_PLATFORM\" = \"ios\" ]; then xcodebuild -downloadComponent MetalToolchain; fi"
+    "eas-build-post-install": "if [ \"$EAS_BUILD_PLATFORM\" = \"ios\" ]; then xcodebuild -downloadComponent MetalToolchain; fi",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -24,12 +25,15 @@
   "devDependencies": {
     "@types/react": "~19.1.0",
     "babel-preset-expo": "^54.0.10",
+    "patch-package": "^8.0.1",
     "typescript": "~5.9.2"
   },
   "private": true,
   "expo": {
     "autolinking": {
-      "searchPaths": ["./modules"]
+      "searchPaths": [
+        "./modules"
+      ]
     }
   }
 }

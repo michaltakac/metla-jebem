@@ -54,8 +54,7 @@
             "deploymentTarget": "17.0"
           }
         }
-      ],
-      "./plugins/withDedupeSdkSignatures"
+      ]
     ],
     "extra": {
       "eas": {

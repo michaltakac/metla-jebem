@@ -1,0 +1,25 @@
+diff --git a/node_modules/expo-meta-wearables-dat/ios/EMWDAT.podspec b/node_modules/expo-meta-wearables-dat/ios/EMWDAT.podspec
+index 6aac6fe..1e425e5 100644
+--- a/node_modules/expo-meta-wearables-dat/ios/EMWDAT.podspec
++++ b/node_modules/expo-meta-wearables-dat/ios/EMWDAT.podspec
+@@ -25,11 +25,15 @@ Pod::Spec.new do |s|
+   s.dependency 'ExpoModulesCore'
+ 
+   # Meta Wearables DAT SDK via Swift Package Manager
+-  spm_dependency(s,
+-    url: 'https://github.com/facebook/meta-wearables-dat-ios',
+-    requirement: { kind: 'upToNextMinorVersion', minimumVersion: '0.5.0' },
+-    products: ['MWDATCore', 'MWDATCamera', 'MWDATMockDevice']
+-  )
++  # Guard against duplicate registration when podspec is evaluated multiple times.
++  unless defined?($emwdat_spm_dependency_added) && $emwdat_spm_dependency_added
++    spm_dependency(s,
++      url: 'https://github.com/facebook/meta-wearables-dat-ios',
++      requirement: { kind: 'upToNextMinorVersion', minimumVersion: '0.5.0' },
++      products: ['MWDATCore', 'MWDATCamera', 'MWDATMockDevice']
++    )
++    $emwdat_spm_dependency_added = true
++  end
+ 
+   # Swift/Objective-C settings
+   s.pod_target_xcconfig = {
