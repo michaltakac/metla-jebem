@@ -54,7 +54,8 @@
             "deploymentTarget": "17.0"
           }
         }
-      ]
+      ],
+      "./plugins/withRemoveDuplicateXcframeworkSignatures"
     ],
     "extra": {
       "eas": {
